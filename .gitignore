@@ -23,6 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 
-./components/notes.jsx 
+notes.txt
 
 
