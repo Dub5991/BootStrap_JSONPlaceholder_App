@@ -688,3 +688,877 @@ export default App;
 Now, go to the list of users and when we click on one of the user's "Todo List" buttons, it should show the loading message and the take us to the UserTodos component that is styled with ListGroup.
 
 ✅ Congratulations! You've successfully completed Part 1 of the "Integrating Bootstrap with React" lesson! You learned how to use React Bootstrap to add Content, Row, Col, Spinner, Carousel, Navbar, Badge, Card, and ListGroup components to our React App!  In Part 2 of this lesson, we will style Forms using React Bootstrap in our JSONPlaceholder User App.
+
+Hello!  Let's...........
+
+
+
+keepgoing.gif
+
+
+📌 Continuing on... 
+React Bootstrap and Forms
+In this lesson we will continue our exploration of React Bootstrap by creating a Form.  Forms are essential elements in most web applications, from capturing user data to enabling interactive feedback. By using React Bootstrap, you can create sleek, responsive, and accessible forms with minimal effort. React Bootstrap combines the simplicity of Bootstrap’s pre-built components with the flexibility and interactivity of React, allowing you to handle user input, validations, and state management seamlessly.
+
+React Bootstrap’s form components include everything you need to design various types of forms, such as input fields, radio buttons, and dropdowns.  By applying React Bootstrap to your forms, you gain the benefits of Bootstrap’s popular grid system and styling utilities, making your forms not only functional but also visually appealing across devices.
+
+Whether you’re building a simple contact form or a complex data input system, React Bootstrap makes the process straightforward, ensuring that you can focus on functionality and user experience without getting bogged down by CSS styling.
+
+
+🧠📓Engage & Apply: Continue Styling our JSONPlaceholder User App 
+We will be continue working in the project we built in the previous lesson so if you didn't create it or follow along, you will want to go back and do so.  We will explore how to create a form using React Bootstrap as well as some other Bootstrap components.
+
+Remember: we won't be covering all the code we put in this project since a lot of it is review.  We will only go over the blocks that have to do with React Bootstrap.
+
+
+
+Continuing the Project in VS Code:
+Make sure the spa-router-bootstrap folder is open inside of VS Code
+Make sure the server is running using npm run dev 
+Inside of the components folder create the following new components:
+FormModal.jsx
+OffCanvas.jsx
+UserForm.jsx
+Create the Form inside of UserForm.jsx  
+First, let's create the form for creating a user.  This will use new React Bootstrap components like InputGroup, FloatingLabel, and Alert  
+
+Inside of UserForm.jsx insert this code:
+
+// src/components/UserForm.js
+
+import { useState } from 'react';
+import Container from 'react-bootstrap/Container';
+import Form from 'react-bootstrap/Form';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
+import Button from 'react-bootstrap/Button';
+import Alert from 'react-bootstrap/Alert';
+import InputGroup from 'react-bootstrap/InputGroup';
+import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import axios from 'axios';
+
+const UserForm = () => {
+
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    food: '',
+    communication: '',
+  });
+
+  const [submitted, setSubmitted] = useState(false);
+  const [user, setUser] = useState(null);
+  const [error, setError] = useState(null);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post('https://jsonplaceholder.typicode.com/users', formData);
+      console.log(response.data);
+      setUser(response.data);
+      setSubmitted(true);
+      setError(null);
+    } catch (err) {
+      setError(`Error submitting the form. Please try again: ${err.message}`);
+      setSubmitted(false);
+    }
+  };
+
+  return (
+    <Container className="mt-5">
+      <h2>Create User</h2>
+
+      {submitted && <Alert variant="success" dismissible>{user.name} created successfully!</Alert>}
+      {error && <Alert variant="danger" dismissible>{error}</Alert>}
+
+      <Form onSubmit={handleSubmit}>
+        <Row>
+          <Col md="5">
+            <Form.Group controlId="formName" className="mb-3">
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter your name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
+          </Col>
+
+          <Col md="7">
+            <InputGroup className="mb-3" style={{ marginTop: '32px' }}>
+              <InputGroup.Text>@</InputGroup.Text>
+              <Form.Control
+                type="email"
+                placeholder="Enter your email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </InputGroup>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col md="7">
+            <FloatingLabel controlId="floatingPhone" label="Phone" className="mb-3" style={{ marginTop: '12px' }}>
+              <Form.Control
+                type="number"
+                placeholder="Phone"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                required
+              />
+            </FloatingLabel>
+          </Col>
+
+          <Col md="5">
+            <Form.Group controlId="formSelect" className="mb-3">
+              <Form.Label>Select Favorite Food</Form.Label>
+              <Form.Select
+                name="food"
+                value={formData.food}
+                onChange={handleChange}
+                required
+              >
+                <option hidden value="">Choose...</option>
+                <option>Pizza</option>
+                <option>Steak</option>
+                <option>Ice Cream</option>
+                <option>Other</option>
+              </Form.Select>
+            </Form.Group>
+          </Col>
+        </Row>
+
+        <Form.Group className="mb-3" controlId="formRadio">
+          <Form.Label>Preferred method of communication:</Form.Label>
+          <Form.Check
+            type="radio"
+            id="email"
+            name="communication"
+            label="Email"
+            value="Email"
+            onChange={handleChange}
+            required
+          />
+          <Form.Check
+            type="radio"
+            id="phone"
+            name="communication"
+            label="Phone"
+            value="Phone"
+            onChange={handleChange}
+            required
+          />
+        </Form.Group>
+
+        <Button variant="primary" type="submit" className="mt-3">
+          Submit
+        </Button>
+      </Form>
+
+    </Container>
+  );
+};
+
+export default UserForm;
+Explanation:
+Imports:
+We import all the regular items except for Alert, InputGroup, and FloatingLabel which will be discussed soon 
+
+State Variables
+formData - this uses the technique discussed in a previous lesson where we use an object to keep track of the user input.  
+The keys in the object match up with the name of each input 
+handleChange is called whenever the onChange event (the input changes) occurs.  
+It will pull the name and value from the input 
+Sets formData to a copy of the current formData object
+Updates the correct key with the current value from the changed input 
+If you don't remember how this works feel free to go back and review
+submitted - keeps track of whether the form has been submitted correctly or not.
+When submitted is true an Alert will display confirming the user was created successfully  
+user - this contains the user information returned from the API request
+error - if there's an error during the API call, it will be stored here
+When error has a value, an Alert that contains the error message will display
+
+handleChange and handleSubmit
+handleChange was already discussed in a previous lesson and summarized above
+handleSubmit does what we've already seen except it uses setSubmitted to make the Alert discussed above appear or stay hidden
+
+Conditional Rendering and Alert
+We have conditional rendering with submitted and error
+When those state variables are truthy the Alert components will appear like we discussed above
+Alert - used to display notifications, messages, warnings, or other information to users in a visually distinct and noticeable way
+Our Alert components have the following props:
+variant="success" - defines the background color of the Alert
+dismissible - places a X button on the Alert so it can be closed/removed
+These alerts will show when the form is successfully submitted and if there's an error with the API call
+
+The Form and Name Text Input 
+When the Form is submitted it will run handleSubmit which does the API call
+We setup a Row with two Col 
+the name input will go in the first column on the left and the email input will go into the second column on the right
+md="5" - will take up 5 out of the 12 spaces available in the Row
+
+<Form.Group> - wraps individual form elements (such as input fields and labels) together as a single group
+controlId="formName" - associates a label with a specific form control. 
+Sets up the for and id all in one so when you click on the Form.Label it will select the input box. 
+This association enhances accessibility, allowing screen readers to better recognize which label corresponds to which input.
+This Form.Group has a margin bottom of 3 to help separate it from the other form elements
+
+<Form.Label> - displays labels for form controls, like input fields, radio buttons, etc.
+Labels help users understand the purpose of each input, making forms more accessible and user-friendly.
+
+<Form.Control> - render various types of form elements, such as text inputs, email fields, passwords, text areas, and more. 
+It simplifies form element styling and behavior, aligning them with Bootstrap’s default styling for a unified, responsive look.
+The type and placeholder props should be review
+name="name" - this is used by handleChange to update the correct key in the formData object
+value={formData.name} - binds the value of this text field to the name key in the formData object
+onChange={handleChange} - when the value of this text box changes or is updated the handleChange runs
+required - indicates that an input is required for form submission. 
+
+The Email Input and InputGroup
+This is in the second Col in the Row to the right
+md="7" - will take up 7 out of the 12 spaces available in the Row making it wider than the name input
+<InputGroup> - groups form inputs with additional elements, such as text, icons, or buttons
+It has a margin bottom of 3 and a margin top of 32px so it will line up with the name input
+<InputGroup.Text> - adds non-editable content to the beginning or end of an input field
+In our case we are adding a @ to the beginning of our email input box
+<Form.Control> - exactly the same as our name input except it has a type="email" instead of type="text"
+
+The Phone Input and FloatingLabel
+We created a new Row with two more Col 
+the phone input will be on the left and the dropdown we will create next will be on the right
+md="7" - will take up 7 out of the 12 spaces available in the Row making it wider than the dropdown
+<FloatingLabel> - combines the functionality of a label, placeholder, and an input field 
+The label appears as a placeholder when the input is empty and then "floats" above the input when the user focuses on the field
+controlId="floatingPhone" - associates the label with the corresponding input control
+label="Phone" - this is the text that will display in the input field and float up when the field is selected
+It has a margin bottom of 3 and a margin top of 12px so it will line up with the dropdown
+<Form.Control> - exactly the same as our name/email inputs except it has type="number"
+
+Favorite Food Dropdown
+This will be in the 2nd Col on the right in the Row
+md="5" - will take up 5 out of the 12 spaces available in the Row making it less wide than the phone input
+<Form.Group> and <Form.Label> - these components do the same thing we previous discussed with the name input
+Form.Select - creates a dropdown selection input that allows users to choose one item from a list of predefined options
+The props on <Form.Select> have the same functionality as the other props on the other inputs
+<option hidden value="">Choose...</option> - this option can't be selected and is here to give instructions
+hidden - this prop makes it so when the option is deselected, it will disappear and not be able to be picked again
+value="" - defines the value of the option empty.  Since it is required, this will help us with validation, which we will talk about later in the lesson
+
+Preferred Communication Radio Buttons
+This doesn't have a Row or Col defined so it will be by itself on the next line down
+<Form.Group> and <Form.Label> - these components do the same thing we previous discussed with the name input
+<Form.Check> - used to create individual checkboxes and radio buttons
+All of the props have been explained already in previous inputs except....
+type="radio" - this makes this Form.Check component a radio button
+id - identifies each individual radio button and needed if you want the labels to select the radio buttons
+name="communication" - all of the radio buttons in the same group need to have the same name value.
+This will make it so only one radio button in the group can be selected
+The name prop, like already discussed, is used in the handleChange function as well
+value="Email" - radio buttons can't inherently have a value like an input box or dropdown can.  You don't type in them.  
+Because of that, we have defined if this radio button is selected, the value will be "Email"
+The other radio button has a value of "Phone" 
+
+Submit Button
+This doesn't have a Row or Col defined so it will be by itself on the next line down
+variant - defines the background color
+type="submit" - when the button is clicked the form will go through the submit process
+Has a margin top of 3
+
+
+Add  UserForm to App
+Now that we've finished the UserForm component, let's test it out by importing it and adding a Route that will contain a path that will display the form.  Add this code to App (the added code is marked by comments).
+
+import { Routes, Route } from 'react-router-dom';
+import HomePage from './components/HomePage';
+import NavBar from './components/NavBar';
+import NotFound from './components/NotFound';
+import Users from './components/Users';
+import UserTodos from './components/UserTodos';
+{/* added code starts here */ }
+import UserForm from './components/UserForm';
+{/* added code stops here */ }
+
+
+function App() {
+  return (
+    <>
+      <NavBar />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/users" element={<Users />} />
+        <Route path="/user-todos/:userId" element={<UserTodos />} />
+				{/* added code starts here */}
+				<Route path="/user-form" element={<UserForm />} />
+				{/* added code stops here */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </>
+  );
+}
+
+export default App;
+Double check NavBar
+Go to NavBar.jsx and make sure that the link to the /user-form route is there:
+
+<NavDropdown title="Examples" id="basic-nav-dropdown">
+		{/* Make sure the link below exists and has the correct href */}
+		<NavDropdown.Item href="/user-form"> User Form</NavDropdown.Item>
+    <NavDropdown.Item href="#">Something Else</NavDropdown.Item>
+</NavDropdown>
+Test it out by going to the home page, click on "Examples" to access the drop down menu, and choose "User Form"
+
+You should be able to fill out the form and submit it.  It will then gather the information from the form and send it to the API.  
+You should get an Alert back saying that the user's name was created successfully.  
+We know this is getting returned from the API since in the Alert we use the state variable user.name that is set in the HTTP request.
+
+
+
+Preparing UserForm to Show a Modal
+Right now, we only see an Alert with the created user's name when we submit the form.  It would be nice if we could have a pop up window display confirming to us that the user was created and the information we submitted to the form, did indeed get sent to, and returned from the API.
+
+This is where a Modal could be extremely helpful.  
+
+A Modal displays content in a dialog overlay, often used to capture user input, display information, or confirm actions without navigating away from the current page.
+
+So this is what we're going to do:
+
+Create a Modal inside of it's own component
+Place it inside of UserForm as a child component
+Pass all the props the Modal will need from UserForm  
+Let's get started!
+
+
+Create showModal and handleCloseModal
+Open up UserForm.jsx 
+
+Below the error state variable 
+Around line 26:
+Add the showModal state variable and handleCloseModal variable
+const [submitted, setSubmitted] = useState(false);
+const [user, setUser] = useState(null);
+const [error, setError] = useState(null);
+
+/****** added code starts here ******/
+const [showModal, setShowModal] = useState(false);
+const handleCloseModal = () => setShowModal(false);
+/****** added code stops here ******/
+Explanation:
+showModal - this state variable will contain a boolean value controlling whether the Modal should display or not
+handleCloseModal - this variable holds a function that when ran, will setShowModal to false which will hide the Modal
+Both of these variables will be passed as props to the component that will contain the Modal
+
+
+Set showModal to true
+We want to make sure the Modal shows when the form has successfully been submitted so we can display the returned user's info
+
+So in the try code block, below setSubmitted(true) 
+around line 53 
+insert setShowModal and set it to true:
+try {
+        const response = await axios.post('https://jsonplaceholder.typicode.com/users', formData);
+        console.log(response.data);
+        setUser(response.data);
+        setSubmitted(true);
+        /****** added code starts here ******/
+        setShowModal(true);
+        /****** added code stops here ******/
+        setError(null); 
+      } catch (err) {
+        setError(`Error submitting the form. Please try again: ${err.message}`);
+        setSubmitted(false);
+      }
+    }
+
+Explanation:
+After the form is submitted, and the API call is done, we will setShowModal to true which will display the Modal to the page
+Insert the FormModal Child Component and Pass the Props
+Now that we've created the showModal and handleCloseModal variables, let's pass them, along with user and submitted, down to the FormModal component we are about to create
+
+Under the <h2>Create User</h2> header
+Around line 66
+insert <FormModal> and pass all the props down to it
+NOTE: we haven't created this yet, we are just inserting it for now
+<Container className="mt-5">
+      <h2>Create User</h2>
+
+			{/****** added code starts here ******/}
+			<FormModal user={user} submitted={submitted} showModal={showModal} handleCloseModal={handleCloseModal} />
+			{/****** added code stops here ******/}
+			
+      {submitted && <Alert variant="success" dismissible>{user.name} created successfully!</Alert>}
+
+Explanation:
+We are inserting the FormModal child component into UserForm and are passing all the props it will need to display when the form is submitted
+The props are named the same as the variables they are equal to.  That will make them easier to use inside of FormModal
+
+
+Import FormModal in UserForm
+Now that we setup everything in UserForm to display FormModal we need to import it
+
+Above the axios import
+Around line 11
+import FormModal 
+import FloatingLabel from 'react-bootstrap/FloatingLabel';
+/****** added code starts here ******/
+import FormModal from './FormModal';
+/****** added code stops here ******/
+import axios from 'axios';
+Now UserForm should be ready to display FormModal.  We just need to create it now.
+
+
+
+Create FormModal
+UserForm has the variables created, is trying to display the FormModal child component, and is passing the props down to it, so let's create FormModal by adding this code inside of FormModal.jsx
+
+// src/components/FormModal.js
+
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+
+const FormModal = ({ user, submitted, showModal, handleCloseModal }) => {
+
+  return (
+    <>
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Form Submitted!</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {submitted &&
+            <>
+              <p>Nice job!  Here is the information returned from the API:</p>
+              <p><b>Name: </b>{user.name}</p>
+              <p><b>Email: </b>{user.email}</p>
+              <p><b>Phone: </b>{user.phone}</p>
+              <p><b>Food: </b>{user.food}</p>
+              <p><b>Communication: </b>{user.communication}</p>
+            </>
+          }
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={handleCloseModal}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
+  );
+};
+
+export default FormModal;
+Explanation:
+Imports 
+We import Button and Modal
+The Button will close the Modal
+
+Receiving/Destructuring the Props
+In order for FormModal to work, it receives the following props from UserForm
+user - the state variable that contains the created user's data returned from the API (we already covered this)
+submitted  - the state variable that tells us whether the form was submitted correctly or not (already covered this)
+showModal - the state variable that controls whether the Modal should be visible or not
+handleCloseModal - the variable that hold a function that will setShowModal to false, which will hide the Modal
+REMEMBER: one of the great things about props is if their values change in the parent component (UserForm), then their values will update in the child component (FormModal) as well
+In our case, when submitted and showModal are set to true or false inside of UserForm those values will also change in FormModal which will allow the Modal and its content display or hide
+
+Returning the Modal
+<Modal> - defines where the Modal starts and ends and has these props:
+show={showModal} - this prop requires a boolean value and is equal to showModal.  
+The second showModal is true, it will show the Modal, when it's false it will hide it
+onHide={handleCloseModal} - this prop is used to specify a function that will run when the Modal is about to close
+In our case, when we click on the X button to close the Modal it will run handleCloseModal which sets showModal to false hiding the Modal
+
+<Modal.Header> - defines the header section of the Modal which typically contains the title and controls for closing it.  It has one prop:
+closeButton - displays an X button on the Modal that, when clicked, triggers the onHide prop running handleCloseModal 
+
+<Modal.Title> - used within Modal.Header to provide context and a brief description of purpose
+
+<Modal.Body> - defines the area which usually contains the main content of the Modal
+
+<Modal.Footer> - define the section which typically contains action buttons that allow users to interact with the Modal
+In our case, we have a Button that when clicked, runs handleCloseModal in UserForm which sets showModal to false hiding the Modal
+
+Conditional Rendering with  submitted
+If submitted is true then the form has been filled out and submitted 
+That will then allow us to show the message that displays the user's info returned from the API call
+We have to use conditional rendering here because we only want to try and show the user's info if the form has been submitted
+if submitted is false, then the form hasn't been filled out 
+if the form hasn't been filled out the API hasn't been called so user will be equal to null
+if user is null then the page will error out when we try and access user.name, user.email etc.
+
+Now that FormModal is done, you should be able to test it out now
+
+When you fill out the form and press submit, it should display the returned data in a Modal
+
+
+
+Form Validation with React Bootstrap
+Right now, we are using the required prop to filing out these inputs necessary before the form will submit.  The messages we get when we don't fill them out is controlled by the browser so the experience will be different.  
+
+React Bootstrap allows us to show/hide custom messages that allow us to prompt users to fill in the required portions of the form.  
+
+To accomplish this we will need to add the required code blocks into UserForm.jsx
+
+Setting up the validated State Variable
+Under the handleCloseModal variable
+Around line 29
+insert the validated state variable
+const [showModal, setShowModal] = useState(false);
+const handleCloseModal = () => setShowModal(false);
+
+/****** added code starts here ******/
+const [validated, setValidated] = useState(false);
+/****** added code stops here ******/
+			
+Explanation:
+the validated state variable is a boolean value that will be set to true after a form has been submitted and we are ready to apply Bootstrap validation styles
+This will work with a validated prop that will we define later on the Form component.
+
+Run checkValidity() on the Form
+In the handleSubmit function, under e.preventDefault()
+Around line 42
+We need to create a variable and if statement and put the try catch statement in the else portion 
+We also need to make sure to close the else block as well as add setValidated(true); at the end of handleSubmit
+Be very careful when adding this code.  Make sure that all of your curly brackets and parenthesis line up
+const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    /****** added code starts here ******/
+    const form = e.currentTarget;
+    if (form.checkValidity() === false) {
+      e.stopPropagation();
+    } else {
+    /****** added code stops here ******/
+
+      try {
+        const response = await axios.post('https://jsonplaceholder.typicode.com/users', formData);
+        console.log(response.data);
+        setUser(response.data);
+        setSubmitted(true);
+        setShowModal(true);
+        setError(null); 
+      } catch (err) {
+        setError(`Error submitting the form. Please try again: ${err.message}`);
+        setSubmitted(false);
+      }
+     /****** added code starts here ******/
+    }
+    setValidated(true);
+     /****** added code stops here ******/
+  };
+Explanation:
+We create a variable called form and set it equal to e.currentTarget 
+the current target is the thing that had the submit event happen to it which is the form itself
+Now that we have the form stored inside of form we can: 
+Evaluate form.checkValidity() with an if statement
+checkValidity() is a built-in function of the HTML form element.
+It returns a boolean value indicating whether the form is valid or not, based on the HTML5 validation attributes like required, minlength, maxlength, pattern, etc.
+If checkValidity() is true we continue on and do the API call
+If it's false:
+e.stopPropagation() runs - which ensure that if there are parent components listening for a submit event (for example, to log data or show a message), those handlers will not execute.  
+NOTE: We currently don't have any parent components listening for a submit so this is not totally necessary but it could be in the future.
+Lastly, setValidated(true) runs which then applies all the validation styles to the inputs that show whether an input is good or not
+
+
+Apply noValidate and validated to the Form
+In the <Form> component, under the error conditional rendering
+Around line 73
+We need a to add the noValidate and validated props
+{submitted && <Alert variant="success" dismissible>{user.name} created successfully!</Alert>}
+{error && <Alert variant="danger" dismissible>{error}</Alert>}
+
+{/* added "noValidate" and "validated={validated}" as props below inside of the Form component */}
+<Form onSubmit={handleSubmit} noValidate validated={validated}>
+Explanation:
+noValidate - disables the browser's built-in validation for the form
+before we added this, if we tried to submit the form, the browser's validation and messages would run
+validated={validated} - setting the validated prop equal to the value of the validated state will control whether the validation styles/messages show up or not.
+If the validated state variable becomes true, therefore making the prop validated equal to true, React Bootstrap will display the validation messages and styling.
+These messages and styling happen in both cases: when the inputs pass and when they don't
+If the input passes it will get a green border, a message (if defined), and a checkmark if possible
+If the input doesn't pass it will get a red border, and a message (if defined)
+
+
+If you go to the form now and test it, you will see the green borders/checkmarks when things are filled out properly.  And you'll see the red borders if they're not.
+
+
+
+Apply Feedback to the Forms
+What if, when things aren't filled out correctly, we want to display a message letting the user know what's wrong?  Let's go ahead and do that:
+
+After each input's Form.Control , Form.Select, or Form.Check components we want to add a <Form.Control.Feedback> component which will show us the message when things aren't filled out the way they should be
+We will be putting these in around lines Around lines 91, 105, 120, 138, and 162
+Here is the name input's <Form.Control.Feedback>
+
+<Form.Group controlId="formName" className="mb-3">
+  <Form.Label>Name</Form.Label>
+  <Form.Control
+    type="text"
+    placeholder="Enter your name"
+    name="name"
+    value={formData.name}
+    onChange={handleChange}
+    required
+  />
+  {/****** added code starts here ******/}
+  <Form.Control.Feedback type="invalid">
+    Please provide a name
+  </Form.Control.Feedback>
+  {/****** added code stops here ******/}
+</Form.Group>
+
+
+Explanation:
+<Form.Control.Feedback> - used to display validation feedback messages within a form field
+type="invalid" - specifies that this feedback message is intended to display when the form field doesn't pass validation
+We will put putting these in the rest of the inputs without any explanations since they all work the same
+
+Email input's <Form.Control.Feedback>
+
+<InputGroup className="mb-3" style={{ marginTop: '32px' }}>
+  <InputGroup.Text>@</InputGroup.Text>
+  <Form.Control
+    type="email"
+    placeholder="Enter your email"
+    name="email"
+    value={formData.email}
+    onChange={handleChange}
+    required
+  />
+{/****** added code starts here ******/}
+  <Form.Control.Feedback type="invalid">
+    Please provide an email
+  </Form.Control.Feedback>
+{/****** added code stops here ******/}
+</InputGroup>
+
+
+Phone input's <Form.Control.Feedback>
+
+<FloatingLabel controlId="floatingPhone" label="Phone" className="mb-3" style={{ marginTop: '12px' }}>
+  <Form.Control
+    type="number"
+    placeholder="Phone"
+    name="phone"
+    value={formData.phone}
+    onChange={handleChange}
+    required
+  />
+{/****** added code starts here ******/}
+  <Form.Control.Feedback type="invalid">
+    Please provide a phone number
+  </Form.Control.Feedback>
+{/****** added code stops here ******/}
+</FloatingLabel>
+
+
+Favorites Food Dropdown's <Form.Control.Feedback>
+
+<Form.Group controlId="formSelect" className="mb-3">
+  <Form.Label>Select Favorite Food</Form.Label>
+  <Form.Select
+    name="food"
+    value={formData.food}
+    onChange={handleChange}
+    required
+  >
+    <option hidden value="">Choose...</option>
+    <option>Pizza</option>
+    <option>Steak</option>
+    <option>Ice Cream</option>
+    <option>Other</option>
+  </Form.Select>
+{/****** added code starts here ******/}
+  <Form.Control.Feedback type="invalid">
+    Please select a food
+  </Form.Control.Feedback>
+{/****** added code stops here ******/}
+</Form.Group>
+
+
+Preferred Communication Radio Button's <Form.Control.Feedback>
+
+<Form.Group className="mb-3" controlId="formRadio">
+  <Form.Label>Preferred method of communication:</Form.Label>
+  <Form.Check
+    type="radio"
+    id="email"
+    name="communication"
+    label="Email"
+    value="Email"
+    onChange={handleChange}
+    required
+  />
+  <Form.Check
+    type="radio"
+    id="phone"
+    name="communication"
+    label="Phone"
+    value="Phone"
+    onChange={handleChange}
+    required
+  />
+{/****** added code starts here ******/}
+  {validated && !formData.communication && (
+    <Form.Control.Feedback type="invalid" className="d-block">
+      Please select a communication method
+    </Form.Control.Feedback>
+  )}
+{/****** added code stops here ******/}
+</Form.Group>
+Explanation:
+We have to wrap <Form.Control.Feedback> in a conditional render 
+We do this because React Bootstrap can only validate single <Form.Control> components like text boxes and dropdowns
+Radio buttons with the same name attribute are treated as a group in HTML, even though only one can be selected at a time
+Because the radio buttons are treated as a group, and not a single form control, React Bootstrap can't validate them
+To get around this we can evaluate the validated state variable and formData.communication which is the value of the selected radio button
+if validated is true, the form has been submitted so the validation can begin
+If !formData.communication is true that means it was empty (falsey) and the ! flipped that to true 
+If these two conditions are true then that means the form has been submitted and the radio buttons haven't been selected yet so the message will display
+
+
+Now if you go to the form now and test it, you will see the messages show up when the inputs aren't filled out correctly.  
+
+
+
+Adding an Offcanvas to UserForm
+The Offcanvas component in React Bootstrap is used to create side panels or drawers that slide in from the side of the screen, offering a flexible and space-saving way to display additional content or navigation options. The Offcanvas component is commonly used for mobile or responsive layouts, where a traditional sidebar may take up too much space.
+
+Creating an OffCanvas
+open up OffCanvas.jsx
+and add this code:
+// src/components/Offcanvas.js
+
+import { useState } from 'react';
+import Button from 'react-bootstrap/Button';
+import Offcanvas from 'react-bootstrap/Offcanvas';
+
+const OffCanvas = () => {
+  const [showOffcanvas, setShowOffcanvas] = useState(false);
+
+  const handleCloseOffcanvas = () => setShowOffcanvas(false);
+  const handleShowOffcanvas = () => setShowOffcanvas(true);
+
+  return (
+    <>
+      <Button variant="link" onClick={handleShowOffcanvas} className='mt-5 text-decoration-none'>
+        🤔 Why fill out this form❓
+      </Button>
+
+      <Offcanvas show={showOffcanvas} onHide={handleCloseOffcanvas}>
+        <Offcanvas.Header closeButton>
+          <Offcanvas.Title>Why?</Offcanvas.Title>
+        </Offcanvas.Header>
+        <Offcanvas.Body>
+          <p>Because this form is life-changing and will blow your mind 🤯</p>
+          <p>That is why❗</p>
+        </Offcanvas.Body>
+      </Offcanvas>
+    </>
+  );
+};
+
+export default OffCanvas;
+Explanation:
+Imports 
+Imports are all the same except for this time we bring in Offcanvas
+
+State Variables/Variables
+showOffcanvas - this state variable will be used with the show prop in an Offcanvas component to define whether it shows or not
+handleCloseOffcanvas - this variable stores a function that will setShowOffcanvas to false (hide it)
+handleShowOffcanvas - this variable stores a function that will setShowOffcanvas to true (show it)
+
+Returned Button 
+When this Button is clicked it runs handleShowOffcanvas which sets showOffcanvas to true which displays it
+variant="link" - makes the button look a normal HTML link
+It has a margin top of 5 and we removed the underline with text-decoration-none
+
+Returned Offcanvas
+<Offcanvas> - defines where the Offcanvas starts and ends and has these props:
+show={showOffcanvas} -  this prop requires a boolean value and is equal to showOffcanvas.
+The second showOffcanvas is true, it will show the Offcanvas, when it's false it will hide it
+onHide={handleCloseOffcanvas} - this prop is used to specify a function that will run when the Offcanvas is about to close
+In our case, when we click on the X button to close the Offcanvas it will run handleCloseOffcanvas which sets showOffcanvas to false hiding the Offcanvas
+
+<Offcanvas.Header> - defines the header section of the Offcanvas which typically contains the title and controls for closing it.  It has one prop:
+closeButton - displays an X button on the Offcanvas that, when clicked, triggers the onHide prop running handleCloseOffcanvas 
+
+<Offcanvas.Title> - used within Offcanvas.Header to provide context and a brief description of purpose
+
+<Offcanvas.Body> - defines the area which usually contains the main content of the Offcanvas
+
+
+
+
+Import and Use OffCanvas in UserForm
+Now that we created setup everything in OffCanvas.jsx to use/display it we need to import it into UserForm we need to import it
+
+Open up UserForm.jsx
+Above the axios import
+Around line 11
+import OffCanvas 
+import FormModal from './FormModal';
+/****** added code starts here ******/
+import OffCanvas from './OffCanvas';
+/****** added code stops here ******/
+import axios from 'axios';
+
+Now UserForm should be ready to display OffCanvas.  
+
+We just need to insert the component:
+
+Above the closing </Container> component
+Around line 169
+insert <OffCanvas/> 
+      </Form>
+/****** added code starts here ******/
+      <OffCanvas />
+/****** added code stops here ******/
+    </Container>
+  );
+};
+
+export default UserForm;
+
+
+Test it out by clicking on the Button that looks like a normal link and we should see the Offcanvas appear and it should go away when you close it
+
+
+
+🛑 Common React Bootstrap Pitfalls and Tips 
+1. Incorrectly Importing Components
+Pitfall: Importing the entire Bootstrap library can bloat your bundle size, which can slow down your app.
+Tip: Importing individual components from Bootstrap like so:
+import Button from 'react-bootstrap/Button';
+2. Forgetting to Include Bootstrap CSS
+Pitfall: React Bootstrap only provides components, not CSS, so forgetting to import Bootstrap’s core CSS can lead to un-styled components.
+Tip: Add Bootstrap CSS in your main.jsx or App.jsx file:
+import 'bootstrap/dist/css/bootstrap.min.css';
+3. Improper Form Validation Management
+Pitfall: React Bootstrap’s form validation (like validated state and isInvalid) can be confusing, especially with grouped inputs like checkboxes or radio buttons, which may not respond as expected.
+Tip: Use custom validation logic for radio groups or checkbox groups. Also, set up conditional rendering for feedback messages, as some elements don’t automatically show feedback without this setup.
+4. Using Offcanvas Without Handling Overflow
+Pitfall: Offcanvas components can cause scrolling or overflow issues, especially on mobile screens.
+Tip: Test Offcanvas on various screen sizes and use scroll and backdrop props effectively. Also, use show and onHide to manage visibility properly.
+5. Using Modals Incorrectly
+Pitfall: Not handling the modal state properly can lead to issues where the modal doesn’t close or reopen as expected.
+Tip: Control modals with a state variable. Pass this variable to show, and set up a function for onHide. Ensure focus returns to the correct element after closing.
+
+
+✅ Congratulations! You've successfully completed the "Integrating Bootstrap with React | Part 2" lesson! You learned how to style a React form using components such as: Modal, Offcanvas, Alert, FloatingLabel, etc.

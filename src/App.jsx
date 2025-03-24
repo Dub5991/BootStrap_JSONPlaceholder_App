@@ -4,7 +4,8 @@ import NavBar from './components/NavBar';
 import NotFound from './components/NotFound';
 import Users from './components/Users';
 import UserTodos from './components/UserTodos';
-	
+import UserForm from './components/UserForm';
+
 
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
 				<Route path="/users" element={<Users />} />		
 				<Route path="/user-todos/:userId" element={<UserTodos />} />
+        <Route path="/user-form" element={<UserForm />} />
 				<Route path="*" element={<NotFound />} />				
       </Routes>
     </>
